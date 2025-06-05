@@ -60,3 +60,11 @@ int main() {
     
     return 0;
 }
+
+serhii@serhii-VirtualBox:~/lab_4$ gcc -o lab_4_1 1.c -lpthread
+serhii@serhii-VirtualBox:~/lab_4$ ./lab_4_1
+
+=== Результати роботи з м'ютексом та без ===
+Очікуване значення лічильника: 200000
+З м'ютексом:    200000
+Без м'ютекса:   200000
