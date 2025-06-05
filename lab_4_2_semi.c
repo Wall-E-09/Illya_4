@@ -144,3 +144,49 @@ int main() {
     
     return 0;
 }
+
+serhii@serhii-VirtualBox:~/lab_4$ gcc -o lab_4_2 2.c -lpthread
+serhii@serhii-VirtualBox:~/lab_4$ ./lab_4_2
+
+=== Робота з семафорами ===
+Writer wrote with sem: 0
+Reader read with sem: Write 0 (with sem)
+Writer wrote with sem: 1
+Reader read with sem: Write 0 (with sem)
+Write 1 (with sem)
+Writer wrote with sem: 2
+Reader read with sem: Write 0 (with sem)
+Write 1 (with sem)
+Write 2 (with sem)
+Writer wrote with sem: 3
+Reader read with sem: Write 0 (with sem)
+Write 1 (with sem)
+Write 2 (with sem)
+Write 3 (with sem)
+Writer wrote with sem: 4
+Reader read with sem: Write 0 (with sem)
+Write 1 (with sem)
+Write 2 (with sem)
+Write 3 (with sem)
+Write 4 (with sem)
+
+=== Робота без семафорів (тільки м'ютекси) ===
+Writer wrote without sem: 0
+Reader read without sem: Write 0 (no sem)
+Reader read without sem: Write 0 (no sem)
+Writer wrote without sem: 1
+Writer wrote without sem: 2
+Reader read without sem: Write 0 (no sem)
+Write 1 (no sem)
+Write 2 (no sem)
+Writer wrote without sem: 3
+Reader read without sem: Write 0 (no sem)
+Write 1 (no sem)
+Write 2 (no sem)
+Write 3 (no sem)
+Reader read without sem: Write 0 (no sem)
+Write 1 (no sem)
+Write 2 (no sem)
+Write 3 (no sem)
+Writer wrote without sem: 4
+serhii@serhii-VirtualBox:~/lab_4$ 
