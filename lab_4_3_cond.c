@@ -111,11 +111,11 @@ int main() {
     pthread_t producer_cv_thread, consumer_cv_thread;
     pthread_t producer_no_cv_thread, consumer_no_cv_thread;
     
-    printf("\n=== Робота з умовними змінними ===\n");
+    printf("\nРобота з умовними змінними\n");
     pthread_create(&producer_cv_thread, NULL, producer_with_cv, NULL);
     pthread_create(&consumer_cv_thread, NULL, consumer_with_cv, NULL);
     
-    printf("\n=== Робота без умовних змінних ===\n");
+    printf("\nРобота без умовних змінних\n");
     pthread_create(&producer_no_cv_thread, NULL, producer_without_cv, NULL);
     pthread_create(&consumer_no_cv_thread, NULL, consumer_without_cv, NULL);
     
