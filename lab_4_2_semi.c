@@ -121,14 +121,14 @@ int main() {
         return 1;
     }
     
-    printf("\n=== Робота з семафорами ===\n");
+    printf("\nРобота з семафорами\n");
     pthread_create(&writer_thread, NULL, writer_with_sem, NULL);
     pthread_create(&reader_thread, NULL, reader_with_sem, NULL);
     
     pthread_join(writer_thread, NULL);
     pthread_join(reader_thread, NULL);
     
-    printf("\n=== Робота без семафорів (тільки м'ютекси) ===\n");
+    printf("\nРобота без семафорів (тільки м'ютекси)\n");
     pthread_create(&writer_no_sem_thread, NULL, writer_without_sem, NULL);
     pthread_create(&reader_no_sem_thread, NULL, reader_without_sem, NULL);
     
