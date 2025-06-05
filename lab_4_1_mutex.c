@@ -31,40 +31,28 @@ int main() {
     
     pthread_mutex_init(&mutex, NULL);
     
-    // З м'ютексом
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_create(&threads_with_mutex[i], NULL, increment_with_mutex, NULL);
     }
     
-    // Без м'ютекса
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_create(&threads_without_mutex[i], NULL, increment_without_mutex, NULL);
     }
     
-    // Очікуємо завершення потоків з м'ютексом
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads_with_mutex[i], NULL);
     }
     
-    // Очікуємо завершення потоків без м'ютекса
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads_without_mutex[i], NULL);
     }
     
     pthread_mutex_destroy(&mutex);
     
-    printf("\n=== Результати роботи з м'ютексом та без ===\n");
+    printf("\nРезультати роботи з м'ютексом та без\n");
     printf("Очікуване значення лічильника: %d\n", NUM_THREADS * INCREMENTS_PER_THREAD);
     printf("З м'ютексом:    %d\n", shared_counter_with_mutex);
     printf("Без м'ютекса:   %d\n", shared_counter_without_mutex);
     
     return 0;
 }
-
-serhii@serhii-VirtualBox:~/lab_4$ gcc -o lab_4_1 1.c -lpthread
-serhii@serhii-VirtualBox:~/lab_4$ ./lab_4_1
-
-=== Результати роботи з м'ютексом та без ===
-Очікуване значення лічильника: 200000
-З м'ютексом:    200000
-Без м'ютекса:   200000
