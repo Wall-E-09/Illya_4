@@ -1,97 +1,64 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <time.h>
+#include <unistd.h>
 
-#define NUM_OPERATIONS 1000000
+#define BUFFER_SIZE 5
 
-int shared_counter = 0;
-sem_t counter_sem;
+int buffer[BUFFER_SIZE];
+sem_t empty, full, mutex;
+int in = 0, out = 0;
 
-// Багатопотокова версія з синхронізацією
-void* incrementer_sync(void* arg) {
-    for (int i = 0; i < NUM_OPERATIONS; i++) {
-        sem_wait(&counter_sem);
-        shared_counter++;
-        sem_post(&counter_sem);
+void* producer(void* arg) {
+    for (int i = 0; i < 10; i++) {
+        sem_wait(&empty);
+        sem_wait(&mutex);
+        
+        buffer[in] = i;
+        printf("Produced: %d\n", i);
+        in = (in + 1) % BUFFER_SIZE;
+        
+        sem_post(&mutex);
+        sem_post(&full);
+        
+        sleep(1);
     }
     return NULL;
 }
 
-void* decrementer_sync(void* arg) {
-    for (int i = 0; i < NUM_OPERATIONS; i++) {
-        sem_wait(&counter_sem);
-        shared_counter--;
-        sem_post(&counter_sem);
+void* consumer(void* arg) {
+    for (int i = 0; i < 10; i++) {
+        sem_wait(&full);
+        sem_wait(&mutex);
+        
+        int item = buffer[out];
+        printf("Consumed: %d\n", item);
+        out = (out + 1) % BUFFER_SIZE;
+        
+        sem_post(&mutex);
+        sem_post(&empty);
+        
+        sleep(2);
     }
     return NULL;
-}
-
-// Багатопотокова версія без синхронізації
-void* incrementer_unsync(void* arg) {
-    for (int i = 0; i < NUM_OPERATIONS; i++) {
-        shared_counter++;
-    }
-    return NULL;
-}
-
-void* decrementer_unsync(void* arg) {
-    for (int i = 0; i < NUM_OPERATIONS; i++) {
-        shared_counter--;
-    }
-    return NULL;
-}
-
-// Однопотокова версія
-void single_thread_counter() {
-    for (int i = 0; i < NUM_OPERATIONS; i++) {
-        shared_counter++;
-    }
-    for (int i = 0; i < NUM_OPERATIONS; i++) {
-        shared_counter--;
-    }
 }
 
 int main() {
-    clock_t start, end;
-    double cpu_time_used;
-    pthread_t t1, t2;
-
-    // Тест 1: Багатопотокова з синхронізацією
-    sem_init(&counter_sem, 0, 1);
-    shared_counter = 0;
-    start = clock();
+    pthread_t prod, cons;
     
-    pthread_create(&t1, NULL, incrementer_sync, NULL);
-    pthread_create(&t2, NULL, decrementer_sync, NULL);
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
+    sem_init(&empty, 0, BUFFER_SIZE);
+    sem_init(&full, 0, 0);
+    sem_init(&mutex, 0, 1);
     
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Multithreaded sync: %.4f sec, counter=%d (correct)\n", cpu_time_used, shared_counter);
-    sem_destroy(&counter_sem);
-
-    // Тест 2: Багатопотокова без синхронізації
-    shared_counter = 0;
-    start = clock();
+    pthread_create(&prod, NULL, producer, NULL);
+    pthread_create(&cons, NULL, consumer, NULL);
     
-    pthread_create(&t1, NULL, incrementer_unsync, NULL);
-    pthread_create(&t2, NULL, decrementer_unsync, NULL);
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
+    pthread_join(prod, NULL);
+    pthread_join(cons, NULL);
     
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Multithreaded unsync: %.4f sec, counter=%d (incorrect)\n", cpu_time_used, shared_counter);
-
-    // Тест 3: Однопотокова версія
-    shared_counter = 0;
-    start = clock();
-    single_thread_counter();
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Single-threaded: %.4f sec, counter=%d (correct)\n", cpu_time_used, shared_counter);
-
+    sem_destroy(&empty);
+    sem_destroy(&full);
+    sem_destroy(&mutex);
+    
     return 0;
 }
